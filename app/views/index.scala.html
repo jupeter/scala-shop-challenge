@@ -1,5 +1,36 @@
-@()
+@import scala.collection.mutable.ListBuffer
+@(items: ListBuffer[repository.Item], itemForm: Form[repository.ItemList])(implicit messages: Messages)
 
-@main("Welcome to Play") {
-  <h1>Welcome to Play!</h1>
+@main("Shop - programming assignment") {
+  <div id="available">
+    <p>Currently available in out shop:</p>
+    <ul data-th-each="item: ${items}">
+      @for(item <- items) {
+        <li>
+          <span class="item-name">@item.name</span>:
+          <span class="item-quantity">@item.quantity</span>
+        </li>
+      }
+    </ul>
+  </div>
+
+  @helper.form(action = routes.HomeController.index()) {
+    @helper.repeat(itemForm("items")) { row =>
+      @helper.inputText(row("quantity"))
+    }
+  }
+
+  <form id="cart" action="@routes.HomeController" method="post">
+    Your shopping:
+    @for(item <- items) {
+      @if(item.quantity > 0) {
+        <fieldset>
+          <span class="item-name">@item.name</span>
+          <input type="number" th:field="*{items[__${stat.index}__].quantity}" />
+        </fieldset>
+      }
+    }
+    
+    <input type="submit" value="Buy!" />
+  </form>
 }

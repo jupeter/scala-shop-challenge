@@ -1,0 +1,18 @@
+@import scala.collection.mutable.ListBuffer
+@(items: ListBuffer[repository.Item])
+
+@main("Shop - programming assignment - submitted") {
+  <div id="summary">
+    <p>You bought:</p>
+    <ul>
+      (foreach)
+      <li>
+        <span class="item-name" th:text="${item.item.name}" />:
+        <span class="item-quantity" th:text="${item.quantity}" />
+      </li>
+      (endforeach)
+    </ul>
+
+    <a href="@routes.HomeController">Back to shop</a>.
+  </div>
+}
