@@ -29,7 +29,7 @@ case class ItemList(items: Seq[Item]) {
   def getItem(id: Long): Item = items.filter(p => id == p.id).head
 
 
-  def takeOff(id: Long, amount: Int) = getItem(id).quantity -= amount
+  def takeOff(id: Long, amount: Int): Unit = getItem(id).quantity -= amount
 }
 
 case class CheckoutItem(id: Long, name: String, quantity: Int = 0)
