@@ -1,36 +1,46 @@
-@import scala.collection.mutable.ListBuffer
-@(items: ListBuffer[repository.Item], itemForm: Form[repository.ItemList])(implicit messages: Messages)
+@(items: repository.ItemList, itemForm: Form[repository.Checkout])(implicit messages: Messages)
 
-@main("Shop - programming assignment") {
-  <div id="available">
-    <p>Currently available in out shop:</p>
-    <ul data-th-each="item: ${items}">
-      @for(item <- items) {
-        <li>
-          <span class="item-name">@item.name</span>:
-          <span class="item-quantity">@item.quantity</span>
-        </li>
-      }
-    </ul>
-  </div>
-
-  @helper.form(action = routes.HomeController.index()) {
-    @helper.repeat(itemForm("items")) { row =>
-      @helper.inputText(row("quantity"))
+    @item(id: Option[String]) = @{
+        items.getItem(java.lang.Long.parseLong(id.getOrElse("0")))
     }
-  }
 
-  <form id="cart" action="@routes.HomeController" method="post">
-    Your shopping:
-    @for(item <- items) {
-      @if(item.quantity > 0) {
-        <fieldset>
-          <span class="item-name">@item.name</span>
-          <input type="number" th:field="*{items[__${stat.index}__].quantity}" />
-        </fieldset>
-      }
+    @itemName(id: Option[String]) = {
+        @item(id).name
     }
-    
-    <input type="submit" value="Buy!" />
-  </form>
-}
+
+    @itemQuantity(id: Option[String]) = {
+        @item(id).quantity
+    }
+
+    @main("Shop - programming assignment") {
+        <div id="available">
+            <p>Currently available in out shop:</p>
+            <ul>
+            @for(item <- items.items) {
+                <li>
+                    <span class="item-name">@item.name</span>:
+                    <span class="item-quantity">@item.quantity</span>
+                </li>
+            }
+            </ul>
+        </div>
+
+        @helper.form(action = routes.HomeController.submit()) {
+            Your shopping:
+            @helper.repeat(itemForm("items"), min = 1) { row =>
+                @helper.inputText(
+                    row("quantity"),
+                    '_label -> itemName(row("id").value),
+                    'type -> "number",
+                    'min -> 0,
+                    'max -> itemQuantity(row("id").value).toString().trim,
+                )
+
+                @helper.input(row("id"), '_label -> None) { (id, name, value, args) =>
+                    <input type="hidden" name="@name" id="@id" value="@value" @toHtmlArgs(args)>
+                }
+            }
+
+            <input type="submit" value="Buy!" />
+        }
+    }

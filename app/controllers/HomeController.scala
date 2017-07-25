@@ -2,33 +2,34 @@ package controllers
 
 import javax.inject._
 
-import play.api._
 import play.api.mvc._
-import repository.{ItemRepository, _}
+import repository.{Checkout, ItemList, _}
 import play.api.data._
 import play.api.data.Forms._
+import play.i18n.Lang
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents, repo: ItemRepository, mcc: MessagesControllerComponents)
+class HomeController @Inject()(cc: ControllerComponents, items: ItemList, mcc: MessagesControllerComponents)
   extends MessagesAbstractController(mcc) {
 
-
-  val itemForm = Form(
+  val itemListForm: Form[Checkout] = Form(
     mapping(
-      "id" -> longNumber,
-      "name" -> nonEmptyText,
-      "quantity" -> number(min = 0)
-    )(Item.apply)(Item.unapply)
-  )
-
-  val itemListForm = Form(
-    mapping(
-      "items" -> seq(itemForm.mapping)
-    )(ItemList.apply)(ItemList.unapply)
+      "items" -> list(
+        // note: skipping `name` field
+        mapping(
+          "id" -> longNumber,
+          "quantity" -> number
+        )
+        // itemListForm -> CheckoutItem
+        ((id, quantity) => CheckoutItem(id, "", quantity))
+        // CheckoutItem -> itemListForm
+        ((ci: CheckoutItem) => Some(ci.id, ci.quantity))
+      )
+    )(Checkout.apply)(Checkout.unapply)
   )
 
   /**
@@ -39,23 +40,23 @@ class HomeController @Inject()(cc: ControllerComponents, repo: ItemRepository, m
    * a path of `/`.
    */
   def index() = Action { implicit request: MessagesRequest[AnyContent] =>
-    val items = repo.findAll
+    val checkout = new Checkout(items)
 
-    itemListForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(views.html.index(items, formWithErrors))
-      },
-      userData => {
-        Redirect(routes.HomeController.submit())
-      }
-    )
-
-    Ok(views.html.index(items, itemListForm))
+    Ok(views.html.index(items, itemListForm.fill(checkout)))
   }
 
   def submit() = Action { implicit request: MessagesRequest[AnyContent] =>
-    val items = repo.findAll
+    itemListForm.bindFromRequest.fold(
+      formWithErrors => {
+        println("Errors: " + formWithErrors)
+        BadRequest(views.html.index(items, formWithErrors))
+      },
+      checkout => {
+        checkout.items.map(i => items.takeOff(i.id, i.quantity))
 
-    Ok(views.html.submit(items))
+        Ok(views.html.submit(items, checkout))
+      }
+    )
   }
+
 }
