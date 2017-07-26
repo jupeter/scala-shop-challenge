@@ -6,14 +6,13 @@ import play.api.mvc._
 import repository.{Checkout, ItemList, _}
 import play.api.data._
 import play.api.data.Forms._
-import play.i18n.Lang
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents, items: ItemList, mcc: MessagesControllerComponents)
+class HomeController @Inject()(mcc: MessagesControllerComponents, items: ItemList)
   extends MessagesAbstractController(mcc) {
 
   val itemListForm: Form[Checkout] = Form(
