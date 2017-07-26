@@ -1,6 +1,7 @@
 package repository
 
 import javax.inject.Singleton
+import scala.collection.mutable.ListBuffer
 
 /**
   * (c) Piotr Plenik <piotr.plenik@gmail.com>
@@ -9,39 +10,47 @@ import javax.inject.Singleton
   * file that was distributed with this source code.
   */
 
-case class Item(id: Long, name: String, var quantity: Int)
+trait ItemTrait {
+  def id: Long
 
-@Singleton
-case class ItemList(items: Seq[Item]) {
-  def this() = this(Seq(
-    Item(
-      id = 1,
-      name = "Item A",
-      quantity = 20
-    ),
-    Item(
-      id = 2,
-      name = "Item B",
-      quantity = 10
-    )
-  ))
+  def name: String
 
-  def getItem(id: Long): Item = items.filter(p => id == p.id).head
-
-
-  def takeOff(id: Long, amount: Int): Unit = getItem(id).quantity -= amount
+  var quantity: Int
 }
 
-case class CheckoutItem(id: Long, name: String, quantity: Int = 0)
+case class Item(override val id: Long, override val name: String, override var quantity: Int) extends ItemTrait
+
+case class CheckoutItem(override val id: Long, override val name: String, override var quantity: Int = 0) extends ItemTrait
+
+
+trait ItemListTrait[A <: ItemTrait] {
+  def items: ListBuffer[A]
+
+  def getItem(id: Long): Option[A] = {
+    try {
+      Some(items.filter(p => p.id == id).head)
+    } catch {
+      case e: NoSuchElementException => None
+    }
+  }
+}
 
 @Singleton
-case class Checkout(var items: List[CheckoutItem] = List()) {
+case class ItemList(items: ListBuffer[Item]) extends ItemListTrait[Item] {
+  def this() = this(ListBuffer())
+
+  def takeOff(id: Long, amount: Int): Unit = getItem(id) match {
+    case Some(i) => i.quantity -= amount
+    case None => None
+  }
+}
+
+
+@Singleton
+case class Checkout(var items: ListBuffer[CheckoutItem] = ListBuffer()) extends ItemListTrait[CheckoutItem] {
+  def this(items: List[CheckoutItem]) = this(items.to[ListBuffer])
 
   def this(itemList: ItemList) = this(
     itemList.items.map(i => CheckoutItem(i.id, i.name)).toList
   )
-
-  def getItem(id: Long): CheckoutItem = items.filter(p => id == p.id).head
-
-
 }

@@ -5,11 +5,18 @@
     }
 
     @itemName(id: Option[String]) = {
-        @item(id).name
+        @item(id) match {
+         case Some(item) => { item.name }
+         case None => { - }
+        }
     }
 
     @itemQuantity(id: Option[String]) = {
-        @item(id).quantity
+        @item(id) match {
+            case Some(item) => { item.quantity }
+            case None => { - }
+
+        }
     }
 
     @main("Shop - programming assignment") {

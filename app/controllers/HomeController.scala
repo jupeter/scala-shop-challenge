@@ -7,6 +7,8 @@ import repository.{Checkout, ItemList, _}
 import play.api.data._
 import play.api.data.Forms._
 
+import scala.collection.mutable.ListBuffer
+
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -28,7 +30,9 @@ class HomeController @Inject()(mcc: MessagesControllerComponents, items: ItemLis
         // CheckoutItem -> itemListForm
         ((ci: CheckoutItem) => Some(ci.id, ci.quantity))
       )
-    )(Checkout.apply)(Checkout.unapply)
+    )
+    ((items) => { Checkout(items.to[ListBuffer]) })
+    ((c: Checkout) => Some(c.items.toList))
   )
 
   /**
