@@ -18,9 +18,11 @@ trait ItemTrait {
   var quantity: Int
 }
 
-case class Item(override val id: Long, override val name: String, override var quantity: Int) extends ItemTrait
+case class Item(override val id: Long, override val name: String, override var quantity: Int)
+  extends ItemTrait
 
-case class CheckoutItem(override val id: Long, override val name: String, override var quantity: Int = 0) extends ItemTrait
+case class CheckoutItem(override val id: Long, override val name: String, override var quantity: Int = 0)
+  extends ItemTrait
 
 
 trait ItemListTrait[A <: ItemTrait] {

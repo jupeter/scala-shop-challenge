@@ -3,7 +3,7 @@ package controllers
 import javax.inject._
 
 import play.api.mvc._
-import repository.{Checkout, ItemList, _}
+import repository._
 import play.api.data._
 import play.api.data.Forms._
 
