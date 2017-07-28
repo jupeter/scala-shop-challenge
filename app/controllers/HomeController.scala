@@ -16,9 +16,9 @@ import scala.concurrent.Future
   */
 @Singleton
 class HomeController @Inject()(
-  mcc: MessagesControllerComponents,
+  mcc: ControllerComponents,
   items: ItemList
-) extends MessagesAbstractController(mcc) {
+) extends AbstractController(mcc) with play.api.i18n.I18nSupport {
   val itemListForm: Form[Checkout] = Form(
     mapping(
       "items" -> list(
@@ -54,13 +54,13 @@ class HomeController @Inject()(
     * will be called when the application receives a `GET` request with
     * a path of `/`.
     */
-  def index() = Action { implicit request: MessagesRequest[AnyContent] =>
+  def index() = Action { implicit request: Request[AnyContent] =>
     val checkout = new Checkout(items)
 
     Ok(views.html.index(items, itemListForm.fill(checkout)))
   }
 
-  def submit(): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
+  def submit(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     itemListForm.bindFromRequest.fold(
       formWithErrors => {
         println("Errors: " + formWithErrors)

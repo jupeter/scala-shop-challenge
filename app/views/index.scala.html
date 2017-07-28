@@ -1,20 +1,20 @@
-@(items: repository.ItemList, itemForm: Form[repository.Checkout])(implicit messages: Messages)
+@(items: repository.ItemList, itemForm: Form[repository.Checkout])(implicit messages: MessagesProvider)
 
     @item(id: Option[String]) = @{
         items.getItem(java.lang.Long.parseLong(id.getOrElse("0")))
     }
 
-    @itemName(id: Option[String]) = {
-        @item(id) match {
-         case Some(item) => { @item.name }
-         case None => { - }
+    @itemName(id: Option[String]) = @{
+        item(id) match {
+         case Some(item) => item.name
+         case None => "-"
         }
     }
 
-    @itemQuantity(id: Option[String]) = {
-        @item(id) match {
-            case Some(item) => { @item.quantity }
-            case None => { - }
+    @itemQuantity(id: Option[String]) = @{
+        item(id) match {
+            case Some(item) => item.quantity
+            case None => "-"
 
         }
     }
@@ -47,7 +47,7 @@
                     '_label -> itemName(row("id").value),
                     'type -> "number",
                     'min -> 0,
-                    'max -> itemQuantity(row("id").value).toString().trim,
+                    'max -> itemQuantity(row("id").value),
                 )
 
                 @helper.input(row("id"), '_label -> None) { (id, name, value, args) =>

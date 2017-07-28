@@ -1,22 +1,18 @@
-@import scala.collection.mutable.ListBuffer
 @(items: repository.ItemList, checkout: repository.Checkout)
 
-@itemName(id: Long) = {
-  @items.getItem(id) match {
-    case Some(item) => { @item.name }
-    case None => { - }
+@itemName(id: Long) = @{
+  items.getItem(id) match {
+    case Some(item) => item.name
+    case None => "-"
   }
 }
-  @main("Shop - programming assignment - submitted") {
 
+@main("Shop - programming assignment - submitted") {
   <div id="summary">
     <p>You bought:</p>
     <ul>
       @for(item <- checkout.items) {
-        <li>
-          <span class="item-name">@itemName(item.id)</span>:
-          <span class="item-quantity">@item.quantity</span>
-        </li>
+        <li>@itemName(item.id): @item.quantity</li>
       }
     </ul>
 

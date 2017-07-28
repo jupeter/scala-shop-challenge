@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
   * file that was distributed with this source code.
   */
 
-trait ItemTrait {
+trait Element {
   var quantity: Int
 
   def id: Long
@@ -19,13 +19,13 @@ trait ItemTrait {
 }
 
 case class Item(override val id: Long, override val name: String, override var quantity: Int)
-  extends ItemTrait
+  extends Element
 
 case class CheckoutItem(override val id: Long, override val name: String, override var quantity: Int = 0)
-  extends ItemTrait
+  extends Element
 
 
-trait ItemListTrait[A <: ItemTrait] {
+trait ElementList[A <: Element] {
   def items: ListBuffer[A]
 
   def getItem(id: Long): Option[A] = {
@@ -38,18 +38,18 @@ trait ItemListTrait[A <: ItemTrait] {
 }
 
 @Singleton
-case class ItemList(items: ListBuffer[Item]) extends ItemListTrait[Item] {
+case class ItemList(items: ListBuffer[Item]) extends ElementList[Item] {
   def this() = this(ListBuffer())
 
   def takeOff(id: Long, amount: Int): Unit = getItem(id) match {
-    case Some(i) => i.quantity -= amount
-    case None => None
+    case Some(i) if amount <= i.quantity => i.quantity -= amount
+    case _ => None
   }
 }
 
 
 @Singleton
-case class Checkout(var items: ListBuffer[CheckoutItem] = ListBuffer()) extends ItemListTrait[CheckoutItem] {
+case class Checkout(var items: ListBuffer[CheckoutItem] = ListBuffer()) extends ElementList[CheckoutItem] {
   def this(items: List[CheckoutItem]) = this(items.to[ListBuffer])
 
   def this(itemList: ItemList) = this(
