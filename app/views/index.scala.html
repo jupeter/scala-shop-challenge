@@ -6,14 +6,14 @@
 
     @itemName(id: Option[String]) = {
         @item(id) match {
-         case Some(item) => { item.name }
+         case Some(item) => { @item.name }
          case None => { - }
         }
     }
 
     @itemQuantity(id: Option[String]) = {
         @item(id) match {
-            case Some(item) => { item.quantity }
+            case Some(item) => { @item.quantity }
             case None => { - }
 
         }
@@ -35,6 +35,13 @@
         @helper.form(action = routes.HomeController.submit()) {
             Your shopping:
             @helper.repeat(itemForm("items"), min = 1) { row =>
+                @if(row.hasErrors) {
+                    <ul>
+                    @row.errors.map { error =>
+                        <li>@error.message</li>
+                    }
+                    </ul>
+                }
                 @helper.inputText(
                     row("quantity"),
                     '_label -> itemName(row("id").value),
