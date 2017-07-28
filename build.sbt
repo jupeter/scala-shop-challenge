@@ -13,6 +13,12 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
+libraryDependencies ++= Seq(
+  "com.typesafe.slick" %% "slick" % "3.2.1",
+  "org.slf4j" % "slf4j-nop" % "1.6.4",
+  "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1"
+)
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "pl.teamlab.controllers._"
 
