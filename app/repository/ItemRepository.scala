@@ -11,11 +11,11 @@ import scala.collection.mutable.ListBuffer
   */
 
 trait ItemTrait {
+  var quantity: Int
+
   def id: Long
 
   def name: String
-
-  var quantity: Int
 }
 
 case class Item(override val id: Long, override val name: String, override var quantity: Int)

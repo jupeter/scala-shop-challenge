@@ -1,4 +1,4 @@
-  import javax.inject.Inject
+import javax.inject.Inject
 
 import com.google.inject.{AbstractModule, ImplementedBy}
 import repository.{Item, ItemList}
@@ -15,7 +15,7 @@ trait Bootstrap {
   * file that was distributed with this source code.
   */
 class BootstrapItemList @Inject()(items: ItemList) extends Bootstrap {
-  def start() = {
+  def start(): Unit = {
     items.items +=
       Item(
         id = 1,
@@ -36,7 +36,7 @@ class BootstrapItemList @Inject()(items: ItemList) extends Bootstrap {
 }
 
 class Module extends AbstractModule {
-  override def configure() = {
+  override def configure(): Unit = {
     bind(classOf[Bootstrap]).to(classOf[BootstrapItemList]).asEagerSingleton()
   }
 }

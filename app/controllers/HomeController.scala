@@ -32,13 +32,13 @@ class HomeController @Inject()(
           // CheckoutItem -> itemListForm
           ((ci: CheckoutItem) => Some(ci.id, ci.quantity))
           verifying("Not enough in stock.", item => {
-            val stockQuantity = items.getItem(item.id) match {
-              case Some(i) => i.quantity
-              case None => 0
-            }
+          val stockQuantity = items.getItem(item.id) match {
+            case Some(i) => i.quantity
+            case None => 0
+          }
 
-            item.quantity <= stockQuantity
-          })
+          item.quantity <= stockQuantity
+        })
       )
     )
     ((items) => {
@@ -60,7 +60,7 @@ class HomeController @Inject()(
     Ok(views.html.index(items, itemListForm.fill(checkout)))
   }
 
-  def submit() = Action.async { implicit request: MessagesRequest[AnyContent] =>
+  def submit(): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
     itemListForm.bindFromRequest.fold(
       formWithErrors => {
         println("Errors: " + formWithErrors)
@@ -69,7 +69,7 @@ class HomeController @Inject()(
         )
       },
       checkout => {
-        checkout.items.map(i => items.takeOff(i.id, i.quantity))
+        checkout.items.foreach(i => items.takeOff(i.id, i.quantity))
 
         Future.successful(
           Ok(views.html.submit(
