@@ -13,12 +13,10 @@ import org.scalatest.Matchers._
   */
 class ItemListSpec extends FlatSpec {
   "Get item by Id" should "return that item" in {
-    val list = new ListBuffer[Item]
     val item1 = Item(1, "Item 1", 5)
     val item2 = Item(2, "Item 2", 12)
-    list += item1
-    list += item2
 
+    val list = ListBuffer[Item](item1, item2)
 
     val itemLists = ItemList(list)
 
