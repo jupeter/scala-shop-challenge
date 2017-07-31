@@ -1,6 +1,7 @@
 import javax.inject.Inject
 
 import com.google.inject.{AbstractModule, ImplementedBy}
+import play.Logger
 import repository.{Item, ItemList}
 
 @ImplementedBy(classOf[BootstrapItemList])
@@ -29,7 +30,9 @@ class BootstrapItemList @Inject()(items: ItemList) extends Bootstrap {
         name = "Item B",
         quantity = 10
       )
-    println("Loaded sample items")
+
+    
+    Logger.info("Loaded sample items: " + items.items)
   }
 
   start()
